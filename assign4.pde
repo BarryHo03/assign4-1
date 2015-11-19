@@ -373,7 +373,7 @@ void draw() {
       }
     }
     image(fighter,fighterX,fighterY);
-    println(bullet);
+    
     //treasure
     image(treasure,treasureX,treasureY); 
     
