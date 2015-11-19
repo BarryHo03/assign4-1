@@ -94,6 +94,7 @@ void draw() {
         if(mousePressed){
           gameState=GAME_RUN;
           blood=39;
+          e=random(0,height-enemy.height);
           fighterX=width-fighter.width;
           fighterY=height/2-fighter.height;
           enemyT1=1980;
@@ -274,102 +275,102 @@ void draw() {
     }
     
     //fighter&shoot
-   for(int i=0;i<5;i++){
-     if(fire[i]){ 
-       shootX[i]=bulletCompensateX[i]+bulletS[i]+fighterX;
-       shootY[i]=bulletCompensateY[i]+fighterY+fighter.height/2-shoot.height/2;  
-       image(shoot,shootX[i],shootY[i]);
-     if(upPressed){
-       if(fighterY>0){
-       bulletCompensateY[i]+=5;
-       }
-     }
-     if(downPressed){
-       if(fighterY<height-fighter.height){
-       bulletCompensateY[i]-=5;
-       }
-     }
-     if(leftPressed){
-       if(fighterX>0){
-       bulletCompensateX[i]+=5;
-       }
-     }
-     if(rightPressed){
-       if(fighterX<width-fighter.width){
-       bulletCompensateX[i]-=5;
-       }
-     }
-     bulletS[i]-=8;
-     if(shootX[i]<=0-shoot.width){
-       bulletCompensateX[i]=0;
-       bulletCompensateY[i]=0;
-       bulletS[i]=0;
-       shootX[i]=bulletCompensateX[i]+bulletS[i]+fighterX;
-       shootY[i]=bulletCompensateY[i]+fighterY+fighter.height/2-shoot.height/2;  
-       fire[i]=false;
-       bullet++;
-     }
-     // bullet hit detection
-     for(int k=0; k<5; k++){
-       if(abs(shootX[i]-enemyX[k])<=enemy.width&&shootY[i]>=enemyY[k]-shoot.height && shootY[i]<=enemyY[k]+enemy.height){
-         fire[i]=false;
-         bulletCompensateX[i]=0;
-         bulletCompensateY[i]=0;
-         bulletS[i]=0;
-         enemyDetect[k]=false;
-         bullet++;
-         currentFrame=0;
-         explode[k]=true;
-         flameX[k]=enemyX[k];
-         flameY[k]=enemyY[k];
-         enemyX[k]=-100;
-         enemyY[k]=-100;
-       }
-       if(abs(shootX[i]-enemyX2[k])<=enemy.width&&shootY[i]>=enemyY2[k]-shoot.height && shootY[i]<=enemyY2[k]+enemy.height){
-         fire[i]=false;
-         bulletCompensateX[i]=0;
-         bulletCompensateY[i]=0;
-         bulletS[i]=0;
-         enemyDetect2[k]=false;
-         bullet++;
-         currentFrame=0;
-         explode[k]=true;
-         flameX[k]=enemyX2[k];
-         flameY[k]=enemyY2[k];
-         enemyX2[k]=-100;
-         enemyY2[k]=-100;
-       }
-       if(abs(shootX[i]-enemyX3[k])<=enemy.width&&shootY[i]>=enemyY3_1[k]-shoot.height && shootY[i]<=enemyY3_1[k]+enemy.height){
-         fire[i]=false;
-         bulletCompensateX[i]=0;
-         bulletCompensateY[i]=0;
-         bulletS[i]=0;
-         enemyDetect3_1[k]=false;
-         bullet++;
-         currentFrame=0;
-         explode[k]=true;
-         flameX[k]=enemyX3[k];
-         flameY[k]=enemyY3_1[k];
-         enemyX3[k]=-100;
-         enemyY3_1[k]=-100;
-       }
-       if(abs(shootX[i]-enemyX3[k])<=enemy.width&&shootY[i]>=enemyY3_2[k]-shoot.height && shootY[i]<=enemyY3_2[k]+enemy.height){
-         fire[i]=false;
-         bulletCompensateX[i]=0;
-         bulletCompensateY[i]=0;
-         bulletS[i]=0;
-         enemyDetect3_2[k]=false;
-         bullet++;
-         currentFrame=0;
-         explode[k]=true;
-         flameX[k]=enemyX3[k];
-         flameY[k]=enemyY3_2[k];
-         enemyX3[k]=-100;
-         enemyY3_2[k]=-100;
-         }
+    for(int i=0;i<5;i++){
+      if(fire[i]){ 
+        shootX[i]=bulletCompensateX[i]+bulletS[i]+fighterX;
+        shootY[i]=bulletCompensateY[i]+fighterY+fighter.height/2-shoot.height/2;  
+        image(shoot,shootX[i],shootY[i]);
+      if(upPressed){
+        if(fighterY>0){
+        bulletCompensateY[i]+=5;
+        }
+      }
+      if(downPressed){
+        if(fighterY<height-fighter.height){
+        bulletCompensateY[i]-=5;
+        }
+      }
+      if(leftPressed){
+        if(fighterX>0){
+        bulletCompensateX[i]+=5;
+        }
+      }
+      if(rightPressed){
+        if(fighterX<width-fighter.width){
+        bulletCompensateX[i]-=5;
+        }
+      }
+      bulletS[i]-=8;
+      if(shootX[i]<=0-shoot.width){
+        bulletCompensateX[i]=0;
+        bulletCompensateY[i]=0;
+        bulletS[i]=0;
+        shootX[i]=bulletCompensateX[i]+bulletS[i]+fighterX;
+        shootY[i]=bulletCompensateY[i]+fighterY+fighter.height/2-shoot.height/2;  
+        fire[i]=false;
+        bullet++;
+      }
+      // bullet hit detection
+      for(int k=0; k<5; k++){
+        if(abs(shootX[i]-enemyX[k])<=enemy.width&&shootY[i]>=enemyY[k]-shoot.height && shootY[i]<=enemyY[k]+enemy.height){
+          fire[i]=false;
+          bulletCompensateX[i]=0;
+          bulletCompensateY[i]=0;
+          bulletS[i]=0;
+          enemyDetect[k]=false;
+          bullet++;
+          currentFrame=0;
+          explode[k]=true;
+          flameX[k]=enemyX[k];
+          flameY[k]=enemyY[k];
+          enemyX[k]=-100;
+          enemyY[k]=-100;
+        }
+        if(abs(shootX[i]-enemyX2[k])<=enemy.width&&shootY[i]>=enemyY2[k]-shoot.height && shootY[i]<=enemyY2[k]+enemy.height){
+          fire[i]=false;
+          bulletCompensateX[i]=0;
+          bulletCompensateY[i]=0;
+          bulletS[i]=0;
+          enemyDetect2[k]=false;
+          bullet++;
+          currentFrame=0;
+          explode[k]=true;
+          flameX[k]=enemyX2[k];
+          flameY[k]=enemyY2[k];
+          enemyX2[k]=-100;
+          enemyY2[k]=-100;
+        }
+        if(abs(shootX[i]-enemyX3[k])<=enemy.width&&shootY[i]>=enemyY3_1[k]-shoot.height && shootY[i]<=enemyY3_1[k]+enemy.height){
+          fire[i]=false;
+          bulletCompensateX[i]=0;
+          bulletCompensateY[i]=0;
+          bulletS[i]=0;
+          enemyDetect3_1[k]=false;
+          bullet++;
+          currentFrame=0;
+          explode[k]=true;
+          flameX[k]=enemyX3[k];
+          flameY[k]=enemyY3_1[k];
+          enemyX3[k]=-100;
+          enemyY3_1[k]=-100;
+        }
+        if(abs(shootX[i]-enemyX3[k])<=enemy.width&&shootY[i]>=enemyY3_2[k]-shoot.height && shootY[i]<=enemyY3_2[k]+enemy.height){
+          fire[i]=false;
+          bulletCompensateX[i]=0;
+          bulletCompensateY[i]=0;
+          bulletS[i]=0;
+          enemyDetect3_2[k]=false;
+          bullet++;
+          currentFrame=0;
+          explode[k]=true;
+          flameX[k]=enemyX3[k];
+          flameY[k]=enemyY3_2[k];
+          enemyX3[k]=-100;
+          enemyY3_2[k]=-100;
+          }
+        }
       }
     }
-  }
     image(fighter,fighterX,fighterY);
   
     //treasure
