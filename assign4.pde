@@ -110,6 +110,7 @@ void draw() {
             bulletS[i]=0;
             bulletCompensateX[i]=0;
             bulletCompensateY[i]=0;
+            bullet=5;
           }
         }else{
         image(end1,0,0);
