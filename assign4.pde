@@ -10,7 +10,6 @@ final int GAME_START = 0;
 final int GAME_RUN= 1;
 final int GAME_OVER= 2;
 final int nbrEnemy=5;
-boolean []enemyDetect= new boolean[nbrEnemy];
 float []enemyX=new float[nbrEnemy];
 float []enemyX2=new float[nbrEnemy];
 float []enemyX3=new float[nbrEnemy];
@@ -25,12 +24,12 @@ float []shootY=new float[5];
 float []bulletS=new float[5];
 float []bulletCompensateX=new float[5];
 float []bulletCompensateY=new float[5];
+boolean[]enemyDetect= new boolean[nbrEnemy];
 boolean[]enemyDetect2=new boolean[nbrEnemy];
 boolean[]enemyDetect3_1=new boolean[nbrEnemy];
 boolean[]enemyDetect3_2=new boolean[nbrEnemy];
 boolean[]explode=new boolean[5];
 boolean[]fire=new boolean[5];
-boolean[][]shootDetect=new boolean[5][5];
 int spacingX=70;
 int spacingY=60;
 int gameState = GAME_START;
@@ -75,11 +74,6 @@ void setup () {
     bulletS[i]=0;
     bulletCompensateX[i]=0;
     bulletCompensateY[i]=0;
-  }
-  for(int i=0;i<5;i++){
-    for(int j=0;j<5;j++){
-      shootDetect[i][j]=false;
-    }
   } 
 }
 
@@ -373,9 +367,9 @@ void draw() {
          enemyX3[k]=-100;
          enemyY3_2[k]=-100;
          }
-       }
-     }
-   }
+      }
+    }
+  }
     image(fighter,fighterX,fighterY);
   
     //treasure
@@ -383,12 +377,12 @@ void draw() {
     
     //refill hp
     if(fighterX<=treasureX+treasure.width && fighterX>=treasureX-fighter.width && fighterY>=treasureY-fighter.height && fighterY<=treasureY+treasure.height){
-    blood+=19.5;
-    treasureX=random(0,width-treasure.width);
-    treasureY=random(0,height-treasure.height);
+      blood+=19.5;
+      treasureX=random(0,width-treasure.width);
+      treasureY=random(0,height-treasure.height);
     }
     if(blood>195){
-    blood=195;
+      blood=195;
     }
       
     //fighter control
