@@ -313,7 +313,8 @@ void draw() {
       // bullet hit detection
       for(int k=0; k<5; k++){
         if(abs(shootX[i]-enemyX[k])<enemy.width&&shootY[i]>enemyY[k]-shoot.height && shootY[i]<enemyY[k]+enemy.height){
-          fire[i]=false;
+          fire[i]=!fire[i];
+          shootX[i]=shootY[i]=1000;
           enemyDetect[k]=false;
           bulletCompensateX[i]=0;
           bulletCompensateY[i]=0;
@@ -372,7 +373,7 @@ void draw() {
       }
     }
     image(fighter,fighterX,fighterY);
-    
+    println(bullet);
     //treasure
     image(treasure,treasureX,treasureY); 
     
