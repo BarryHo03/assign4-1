@@ -312,12 +312,12 @@ void draw() {
       }
       // bullet hit detection
       for(int k=0; k<5; k++){
-        if(abs(shootX[i]-enemyX[k])<=enemy.width&&shootY[i]>=enemyY[k]-shoot.height && shootY[i]<=enemyY[k]+enemy.height){
+        if(abs(shootX[i]-enemyX[k])<enemy.width&&shootY[i]>enemyY[k]-shoot.height && shootY[i]<enemyY[k]+enemy.height){
           fire[i]=false;
+          enemyDetect[k]=false;
           bulletCompensateX[i]=0;
           bulletCompensateY[i]=0;
           bulletS[i]=0;
-          enemyDetect[k]=false;
           bullet++;
           currentFrame=0;
           explode[k]=true;
@@ -372,7 +372,7 @@ void draw() {
       }
     }
     image(fighter,fighterX,fighterY);
-  
+    println(bullet);
     //treasure
     image(treasure,treasureX,treasureY); 
     
