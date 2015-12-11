@@ -9,23 +9,33 @@ boolean rightPressed = false;
 final int GAME_START = 0;
 final int GAME_RUN= 1;
 final int GAME_OVER= 2;
-final int enemyCount=8;
-float []enemyX=new float[enemyCount];
-float[]enemyY=new float [enemyCount];
-float []flameX=new float[enemyCount];
-float []flameY=new float[enemyCount];
+final int nbrEnemy=5;
+float []enemyX=new float[nbrEnemy];
+float []enemyX2=new float[nbrEnemy];
+float []enemyX3=new float[nbrEnemy];
+float[]enemyY=new float [nbrEnemy];
+float[]enemyY2=new float [nbrEnemy];
+float[]enemyY3_1=new float [nbrEnemy];
+float[]enemyY3_2=new float [nbrEnemy];
+float []flameX=new float[5];
+float []flameY=new float[5];
 float []shootX=new float[5];
 float []shootY=new float[5];
-float []bulletY=new float[5];
-boolean[]explode=new boolean[enemyCount];
-float[] distance = new float[enemyCount];
+float []bulletS=new float[5];
+float []bulletCompensateX=new float[5];
+float []bulletCompensateY=new float[5];
+boolean[]enemyDetect= new boolean[nbrEnemy];
+boolean[]enemyDetect2=new boolean[nbrEnemy];
+boolean[]enemyDetect3_1=new boolean[nbrEnemy];
+boolean[]enemyDetect3_2=new boolean[nbrEnemy];
+boolean[]explode=new boolean[5];
+boolean[]fire=new boolean[5];
 int spacingX=70;
-int spacingY=40;
+int spacingY=60;
 int gameState = GAME_START;
 int currentFrame;
 int bullet = 5;
-int score=0;
-int enemyWave, enemyXCount;
+
 void setup () {
   size(640, 480) ;
   bg1=loadImage("img/bg1.png");
@@ -45,7 +55,6 @@ void setup () {
   background1X=640;
   background2X=0;
   blood=39;
-  enemyXCount=-80;
   enemyT1=1980;
   enemyT2=990;
   enemyT3=0;
@@ -55,17 +64,17 @@ void setup () {
   for(int i =0;i<explodeFlames.length;i++){
     explodeFlames[i]=loadImage("img/flame"+(i+1)+".png");
   }
-  for(int i =0;i<5; i++){
-    bulletY[i]=0;
-    shootX[i]  = -1;
-    shootY[i]  = -1;
-  }
-
-  for(int i =0;i<8;i++){
+  for(int i =0;i<nbrEnemy; i++){
+    enemyDetect[i]=true;
+    enemyDetect2[i]=true;
+    enemyDetect3_1[i]=true;
+    enemyDetect3_2[i]=true;
     explode[i]=false;
-  
-  }
-  addEnemy(enemyWave);
+    fire[i]=false;
+    bulletS[i]=0;
+    bulletCompensateX[i]=0;
+    bulletCompensateY[i]=0;
+  } 
 }
 
 void draw() { 
@@ -91,13 +100,17 @@ void draw() {
           enemyT1=1980;
           enemyT2=990;
           enemyT3=0;
-          for(int i=0;i<8;i++){
+          for(int i=0;i<nbrEnemy;i++){
+            enemyDetect[i]=true;
+            enemyDetect2[i]=true;
+            enemyDetect3_1[i]=true;
+            enemyDetect3_2[i]=true;
             explode[i]=false;
-          }
-          for(int i=0;i<5;i++){
+            fire[i]=false;
+            bulletS[i]=0;
+            bulletCompensateX[i]=0;
+            bulletCompensateY[i]=0;
             bullet=5;
-            score=0;
-            bulletY[i]=0;
           }
         }else{
         image(end1,0,0);
@@ -106,36 +119,56 @@ void draw() {
     break;
     case GAME_RUN:
     //bg
-    showBackground();
+    image(bg1,background1X-640,0);
+    background1X++;
+    background1X%=1280;
+    
+    image(bg2,background2X-640,0);
+    background2X++;
+    background2X%=1280;
+    
     //hp 
-    showHp();
+    noStroke();
+    fill(255,0,0);
+    rect(10,0,blood,20);
+    image(hp,0,0);
+        
     //explosion
-    showExplosion();
+    int j = currentFrame ++;
+    for(int i=0;i<5;i++){
+      if(explode[i]){
+        if(0<=j&&j<6){
+          image(explodeFlames[0], flameX[i], flameY[i]);    
+        }
+        if(6<=j&&j<12){
+          image(explodeFlames[1], flameX[i], flameY[i]);    
+        }
+        if(12<=j&&j<18){
+          image(explodeFlames[2], flameX[i], flameY[i]);    
+        }
+        if(18<=j&&j<24){
+          image(explodeFlames[3], flameX[i], flameY[i]);    
+        }
+        if(24<=j&&j<30){
+          image(explodeFlames[4], flameX[i], flameY[i]);    
+        }
+        if(j>=30){
+          explode[i]=false;
+        }
+      }    
+    }
          
     //enemy & its movement
-    enemyXCount+=5;
-      for (int i = 0; i < enemyCount; ++i) {
-        if (enemyX[i] != -1 || enemyY[i] != -1) {
-          image(enemy, enemyX[i], enemyY[i]);
-          enemyX[i]+=5;
-             
-          if(enemyX[i] > 640){
-            enemyX[i] = -1;
-            enemyY[i] = -1;
-          }
-         }
-      }
-    if(enemyXCount > 1000){
-      enemyXCount = -80;
-      enemyWave++;
-      enemyWave %= 3;
-      addEnemy(enemyWave);
-     }
-    for(int i=0;i<8;i++){
-      
+    //first enemy team
+    for(int i=0;i<nbrEnemy;i++){
+      if(enemyDetect[i]){
+        enemyX[i]=enemyT1-2330+i*spacingX;
+        enemyY[i]=e;
+        image(enemy,enemyX[i],enemyY[i]);
+      } 
       //collision
-      if(enemyX[i] != -1 || enemyY[i] !=-1){
-      if(isHit(enemyX[i],enemyY[i],enemy.width,enemy.height,fighterX,fighterY,fighter.width,fighter.height)){
+      if(fighterX<=enemyX[i]+enemy.width && fighterX>=enemyX[i]-fighter.width && fighterY>=enemyY[i]-fighter.height && fighterY<=enemyY[i]+enemy.height){
+        enemyDetect[i]=false;
         currentFrame=0;
         explode[i]=true;
         flameX[i]=enemyX[i];
@@ -143,59 +176,210 @@ void draw() {
         enemyX[i]=-100;
         enemyY[i]=-100;
         blood-=39;    
-      }
       }            
     }
-     
-    shootBullet();
-        
+    enemyT1+=4;
+    enemyT1%=2970;
+    if(enemyT1==0||enemyT1==2){
+      for(int i=0;i<nbrEnemy;i++){
+        enemyDetect[i]=true;
+      }
+      e=random(240,425);
+    }
+    
+    //second enemy team
+    for(int i=0;i<nbrEnemy;i++){
+      if(enemyDetect2[i]){
+      enemyX2[i]=enemyT2-2330+i*spacingX;
+      enemyY2[i]=e-i*spacingY;
+      image(enemy,enemyX2[i],enemyY2[i]);
+      }
+      //collision
+      if(fighterX<=enemyX2[i]+enemy.width && fighterX>=enemyX2[i]-fighter.width && fighterY>=enemyY2[i]-fighter.height && fighterY<=enemyY2[i]+enemy.height){
+        enemyDetect2[i]=false;
+        currentFrame=0;
+        explode[i]=true;
+        flameX[i]=enemyX2[i];
+        flameY[i]=enemyY2[i];        
+        blood-=39;
+        enemyX2[i]=-100;
+        enemyY2[i]=-100;
+      }
+    }
+    enemyT2+=4;
+    enemyT2%=2970;
+    if(enemyT2==0||enemyT2==2){
+      for(int i=0;i<nbrEnemy;i++){
+        enemyDetect2[i]=true;
+      }
+    e=random(120,310);
+    }
+    
+    //third enemy team
+    for(int i=0;i<nbrEnemy;i++){
+      if(enemyDetect3_1[i]){
+      if(i==0||i==4){
+        enemyX3[i]=-1000;
+        enemyY3_1[i]=-1000;
+      }
+      if(0<i && i<=2){
+        enemyX3[i]=enemyT3-2330+i*spacingX;
+        enemyY3_1[i]=e-i*spacingY;
+        image(enemy,enemyX3[i],enemyY3_1[i]);
+      }
+      if(2<i &&i<4){
+        enemyX3[i]=enemyT3-2330+i*spacingX;
+        enemyY3_1[i]=e-2*spacingY+(i-2)*spacingY;
+        image(enemy,enemyX3[i],enemyY3_1[i]);
+      }
+      }
+      if(enemyDetect3_2[i]){
+      if(i<=2){
+        enemyX3[i]=enemyT3-2330+i*spacingX;
+        enemyY3_2[i]=e+i*spacingY;
+      }else{
+        enemyX3[i]=enemyT3-2330+i*spacingX;
+        enemyY3_2[i]=e+2*spacingY-(i-2)*spacingY;
+      }
+      image(enemy,enemyX3[i],enemyY3_2[i]);
+      }
+      //collision
+      if(fighterX<=enemyX3[i]+enemy.width && fighterX>=enemyX3[i]-fighter.width && fighterY>=enemyY3_1[i]-fighter.height && fighterY<=enemyY3_1[i]+enemy.height){
+        enemyDetect3_1[i]=false;
+        currentFrame=0;
+        explode[i]=true;
+        flameX[i]=enemyX3[i];
+        flameY[i]=enemyY3_1[i];
+        blood-=39;
+        enemyX3[i]=-100;
+        enemyY3_1[i]=-100;
+      }
+      if(fighterX<=enemyX3[i]+enemy.width && fighterX>=enemyX3[i]-fighter.width && fighterY>=enemyY3_2[i]-fighter.height && fighterY<=enemyY3_2[i]+enemy.height){
+        enemyDetect3_2[i]=false;
+        currentFrame=0;
+        explode[i]=true;
+        flameX[i]=enemyX3[i];
+        flameY[i]=enemyY3_2[i];
+        blood-=39;
+        enemyX3[i]=-100;
+        enemyY3_2[i]=-100;
+      }
+    }
+    enemyT3+=4;
+    enemyT3%=2970;
+    if(enemyT3==0||enemyT3==2){
+      for(int i=0;i<nbrEnemy;i++){
+        enemyDetect3_1[i]=true;
+        enemyDetect3_2[i]=true;  
+      }
+    e=random(0,425);
+    }
+    
     //fighter&shoot
     for(int i=0;i<5;i++){
-      
-      
-      //missile 
-      for(int k=0; k<8; k++){
-        if(shootX[i] != -1 || shootY[i] != -1){
-        if(enemyX[k] != -1 || enemyY[k] !=-1){
-        if(closestEnemy(shootX[i], shootY[i])!=-1){
-          if(shootY[i]+shoot.height/2 > enemyY[closestEnemy(shootX[i], shootY[i])]+enemy.height/2){
-            shootY[i]-=0.5;
-          }
-          if(shootY[i]+shoot.height/2<enemyY[closestEnemy(shootX[i], shootY[i])]+enemy.height/2){
-            shootY[i]+=0.5;
-          }
+      if(fire[i]){ 
+        shootX[i]=bulletCompensateX[i]+bulletS[i]+fighterX;
+        shootY[i]=bulletCompensateY[i]+fighterY+fighter.height/2-shoot.height/2;  
+        image(shoot,shootX[i],shootY[i]);
+      if(upPressed){
+        if(fighterY>0){
+        bulletCompensateY[i]+=5;
         }
       }
+      if(downPressed){
+        if(fighterY<height-fighter.height){
+        bulletCompensateY[i]-=5;
         }
+      }
+      if(leftPressed){
+        if(fighterX>0){
+        bulletCompensateX[i]+=5;
+        }
+      }
+      if(rightPressed){
+        if(fighterX<width-fighter.width){
+        bulletCompensateX[i]-=5;
+        }
+      }
+      bulletS[i]-=8;
+      if(shootX[i]<=0-shoot.width){
+        bulletCompensateX[i]=0;
+        bulletCompensateY[i]=0;
+        bulletS[i]=0;
+        shootX[i]=bulletCompensateX[i]+bulletS[i]+fighterX;
+        shootY[i]=bulletCompensateY[i]+fighterY+fighter.height/2-shoot.height/2;  
+        fire[i]=false;
+        bullet++;
+      }
       // bullet hit detection
-        if(shootX[i] != -1 || shootY[i] != -1){
-        if(enemyX[k] != -1 || enemyY[k] !=-1){
-        if(isHit(enemyX[k],enemyY[k],enemy.width,enemy.height,shootX[i],shootY[i],shoot.width,shoot.height)){
-          shootX[i] = shootY[i] = -1;
+      for(int k=0; k<5; k++){
+        if(abs(shootX[i]-enemyX[k])<enemy.width&&shootY[i]>enemyY[k]-shoot.height && shootY[i]<enemyY[k]+enemy.height){
+          fire[i]=!fire[i];
+          shootX[i]=shootY[i]=1000;
+          enemyDetect[k]=false;
+          bulletCompensateX[i]=0;
+          bulletCompensateY[i]=0;
+          bulletS[i]=0;
+          bullet++;
           currentFrame=0;
           explode[k]=true;
           flameX[k]=enemyX[k];
           flameY[k]=enemyY[k];
-          enemyX[k]=1000;
-          enemyY[k]=1000;
-          scoreChange(20);
-          bulletY[i]=0;
-        }   
+          enemyX[k]=-100;
+          enemyY[k]=-100;
         }
+        if(abs(shootX[i]-enemyX2[k])<=enemy.width&&shootY[i]>=enemyY2[k]-shoot.height && shootY[i]<=enemyY2[k]+enemy.height){
+          fire[i]=false;
+          bulletCompensateX[i]=0;
+          bulletCompensateY[i]=0;
+          bulletS[i]=0;
+          enemyDetect2[k]=false;
+          bullet++;
+          currentFrame=0;
+          explode[k]=true;
+          flameX[k]=enemyX2[k];
+          flameY[k]=enemyY2[k];
+          enemyX2[k]=-100;
+          enemyY2[k]=-100;
         }
-          if(bullet>=5){
-            bullet=5;
+        if(abs(shootX[i]-enemyX3[k])<=enemy.width&&shootY[i]>=enemyY3_1[k]-shoot.height && shootY[i]<=enemyY3_1[k]+enemy.height){
+          fire[i]=false;
+          bulletCompensateX[i]=0;
+          bulletCompensateY[i]=0;
+          bulletS[i]=0;
+          enemyDetect3_1[k]=false;
+          bullet++;
+          currentFrame=0;
+          explode[k]=true;
+          flameX[k]=enemyX3[k];
+          flameY[k]=enemyY3_1[k];
+          enemyX3[k]=-100;
+          enemyY3_1[k]=-100;
+        }
+        if(abs(shootX[i]-enemyX3[k])<=enemy.width&&shootY[i]>=enemyY3_2[k]-shoot.height && shootY[i]<=enemyY3_2[k]+enemy.height){
+          fire[i]=false;
+          bulletCompensateX[i]=0;
+          bulletCompensateY[i]=0;
+          bulletS[i]=0;
+          enemyDetect3_2[k]=false;
+          bullet++;
+          currentFrame=0;
+          explode[k]=true;
+          flameX[k]=enemyX3[k];
+          flameY[k]=enemyY3_2[k];
+          enemyX3[k]=-100;
+          enemyY3_2[k]=-100;
           }
         }
-        
+      }
     }
-    
+    image(fighter,fighterX,fighterY);
     
     //treasure
     image(treasure,treasureX,treasureY); 
     
     //refill hp
-    if(isHit(treasureX,treasureY,treasure.width,treasure.height,fighterX,fighterY,fighter.width,fighter.height)){
+    if(fighterX<=treasureX+treasure.width && fighterX>=treasureX-fighter.width && fighterY>=treasureY-fighter.height && fighterY<=treasureY+treasure.height){
       blood+=19.5;
       treasureX=random(0,width-treasure.width);
       treasureY=random(0,height-treasure.height);
@@ -204,38 +388,55 @@ void draw() {
       blood=195;
     }
       
-    fighterControl();
-    
-    showScore();
-    
+    //fighter control
+    if(upPressed){
+      fighterY-=speedF;
+     }
+    if(downPressed){
+      fighterY+=speedF;
+    }
+    if(rightPressed){
+      fighterX+=speedF;
+    }
+    if(leftPressed){
+      fighterX-=speedF;
+    }
+    if(fighterX>width-fighter.width){
+    fighterX=width-fighter.width;
+    }
+    if(fighterX<0){
+    fighterX=0;
+    }
+    if(fighterY>height-fighter.height){
+    fighterY=height-fighter.height;
+    }
+    if(fighterY<0){
+    fighterY=0;
+    } 
     if(blood<=0){
     gameState=GAME_OVER;
-    
+    for(int i=0;i<nbrEnemy;i++){
+        enemyDetect[i]=false;
+        enemyDetect2[i]=false;
+        enemyDetect3_1[i]=false;
+        enemyDetect3_2[i]=false;  
+      }
     }
     break;   
   }  
 }
-void shootBullet(){
-  for ( int i=0; i<5; i++){
-    if(shootX[i] != -1 || shootY[i] != -1){
-      image(shoot, shootX[i], shootY[i]);
-      shootX[i]-=6;
-    }
-    if(shootX[i] <= -31)
-      shootX[i] = shootY[i] = -1;
-    }
-}
-
 void keyPressed(){
   if(key == ' ' ){
-    for(int i = 0; i < 5;i++){
-      if(shootY[i] == -1){
-        shootX[i] = fighterX;
-        shootY[i] = fighterY+fighter.height/2-shoot.height/2;
-        break;
-      }
-    } 
-  }   
+    bullet--;
+    if(bullet<=0){
+    bullet=0;
+  }
+  for(int i=0;i<5;i++){
+    if(bullet<=i && bullet>=0){
+      fire[i]=true;
+    }
+  }  
+}   
   if(key == CODED){
     switch(keyCode){
       case UP:
@@ -268,192 +469,6 @@ void keyReleased(){
       case RIGHT:
         rightPressed = false;
         break;
-    }
-  }
-}
-void fighterControl(){
-  image(fighter,fighterX,fighterY);
-    if(upPressed){
-      fighterY-=speedF;
-     }
-    if(downPressed){
-      fighterY+=speedF;
-    }
-    if(rightPressed){
-      fighterX+=speedF;
-    }
-    if(leftPressed){
-      fighterX-=speedF;
-    }
-    if(fighterX>width-fighter.width){
-    fighterX=width-fighter.width;
-    }
-    if(fighterX<0){
-    fighterX=0;
-    }
-    if(fighterY>height-fighter.height){
-    fighterY=height-fighter.height;
-    }
-    if(fighterY<0){
-    fighterY=0;
-    } 
-}
-
-void showScore(){
-  textAlign(LEFT,BOTTOM);
-  textSize(26);
-  fill(255);
-  text("Score:"+score,0,height);
-}
-
-void scoreChange(int value){
-score+=value;
-}
-
-
-boolean isHit(float ax, float ay, float aw, float ah, float bx, float by, float bw, float bh){
-  if(bx<=ax+aw && bx>=ax-bw && by>=ay-bh && by<=ay+ah){
-    return true;
-  }else{
-    return false;
-  }
-} 
-int closestEnemy(float x, float y){
- int index = -1;
- for (int i = 0; i < enemyCount;i++){
-   if(x > enemyX[i]){
-     if(enemyX[i] != -1 || enemyY[i] != -1){ 
-         distance[i] = dist(x,y,enemyX[i],enemyY[i]);
-         float min = distance[i];
-         index = i;
-         for(int j = i+1; j < enemyCount ; j++){
-           distance[j] = dist(x,y,enemyX[j],enemyY[j]);
-           if(min>distance[j]){
-             min = distance[j];
-             index = j;
-           }
-         }
-         break;
-       }
-    }
- }
-  if (index == -1){
-    return -1;
-  }
-  else{
-    return index;
-  }
-}
-
-
-void showBackground(){
-  image(bg1,background1X-640,0);
-  background1X++;
-  background1X%=1280;
-    
-  image(bg2,background2X-640,0);
-  background2X++;
-  background2X%=1280;  
-}
-
-void showHp(){
-   noStroke();
-   fill(255,0,0);
-   rect(10,0,blood,20);
-   image(hp,0,0);
-}
-
-void showExplosion(){
-  int j = currentFrame ++;
-  for(int i=0;i<8;i++){
-    if(explode[i]){
-      if(0<=j&&j<6){
-        image(explodeFlames[0], flameX[i], flameY[i]);    
-      }
-      if(6<=j&&j<12){
-        image(explodeFlames[1], flameX[i], flameY[i]);    
-      }
-      if(12<=j&&j<18){
-        image(explodeFlames[2], flameX[i], flameY[i]);    
-      }
-      if(18<=j&&j<24){
-        image(explodeFlames[3], flameX[i], flameY[i]);    
-      }
-      if(24<=j&&j<30){
-        image(explodeFlames[4], flameX[i], flameY[i]);    
-      }
-      if(j>=30){
-        explode[i]=false;
-      }
-    }    
-  }
-}
-
-void addEnemy(int type)
-{  
-  for (int i = 0; i < enemyCount; ++i) {
-    enemyX[i] = -1;
-    enemyY[i] = -1;
-  }
-  switch (type) {
-    case 0:
-      addStraightEnemy();
-      break;
-    case 1:
-      addSlopeEnemy();
-      break;
-    case 2:
-      addDiamondEnemy();
-      break;
-  }
-}
-
-void addStraightEnemy()
-{
-  float t = random(height - enemy.height);
-  int h = int(t);
-  for (int i = 0; i < 5; ++i) {
-
-    enemyX[i] = (i+1)*-80;
-    enemyY[i] = h;
-  }
-}
-void addSlopeEnemy()
-{
-  float t = random(height - enemy.height * 5);
-  int h = int(t);
-  for (int i = 0; i < 5; ++i) {
-
-    enemyX[i] = (i+1)*-80;
-    enemyY[i] = h + i * 40;
-  }
-}
-void addDiamondEnemy()
-{
-  float t = random( enemy.height * 3 ,height - enemy.height * 3);
-  int h = int(t);
-  int x_axis = 1;
-  for (int i = 0; i < 8; ++i) {
-    if (i == 0 || i == 7) {
-      enemyX[i] = x_axis*-80;
-      enemyY[i] = h;
-      x_axis++;
-    }
-    else if (i == 1 || i == 5){
-      enemyX[i] = x_axis*-80;
-      enemyY[i] = h + 1 * 40;
-      enemyX[i+1] = x_axis*-80;
-      enemyY[i+1] = h - 1 * 40;
-      i++;
-      x_axis++;      
-    }
-    else {
-      enemyX[i] = x_axis*-80;
-      enemyY[i] = h + 2 * 40;
-      enemyX[i+1] = x_axis*-80;
-      enemyY[i+1] = h - 2 * 40;
-      i++;
-      x_axis++;
     }
   }
 }
